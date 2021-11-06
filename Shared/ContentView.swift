@@ -21,11 +21,11 @@ struct ContentView: View {
     #else
     let portNameWidth: CGFloat = 50
     #endif
-#if os(macOS)
+    #if os(macOS)
     let connectorPickerWidth: CGFloat = 200
-#else
+    #else
     let connectorPickerWidth: CGFloat = 200
-#endif
+    #endif
     
     struct Connector: Identifiable {
         var name: String
