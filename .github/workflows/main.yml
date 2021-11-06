@@ -2,8 +2,6 @@ name: Build
 
 on:
   push:
-    tags:
-      - '*'
   pull_request:
   workflow_dispatch:
   release:
@@ -27,18 +25,3 @@ jobs:
 
       - name: Compile Release
         run: xcodebuild -target "USBPatcher (macOS)" -configuration Release
-
-      - name: Compress the app
-        run: cd build/Release;
-             APP_NAME=$(ls | grep .app$);
-             zip -r ${APP_NAME}.zip ${APP_NAME}
-        
-      - name: Upload binaries to release
-        if: github.event_name == 'release'
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: build/Release/*.zip
-          tag: ${{ github.ref }}
-          overwrite: true
-          file_glob: true
