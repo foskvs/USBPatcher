@@ -7,7 +7,7 @@ on:
 jobs:
   build-macos:
     name: Build macOS
-    runs-on: macos-latest
+    runs-on: macos-11
         
     env:
       JOB_TYPE: BUILD
