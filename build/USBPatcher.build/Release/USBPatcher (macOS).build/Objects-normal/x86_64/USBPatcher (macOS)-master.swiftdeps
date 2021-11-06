@@ -1,8 +1,0 @@
-version: "Apple Swift version 5.5.1 (swiftlang-1300.0.31.4 clang-1300.0.29.6)"
-options: "88985a633138dd292685bfbc92ea367c03548fb0f3db9a4fdc0bf3633edc0ecc"
-build_start_time: [1636214801, 353677988]
-build_end_time: [1636214807, 432955980]
-inputs:
-  "/Users/gabriele/GitHub/USBPatcher/Shared/ContentView.swift": [1636213413, 844668149]
-  "/Users/gabriele/GitHub/USBPatcher/Shared/USBPatcherApp.swift": [1636205282, 52450656]
-  "/Users/gabriele/GitHub/USBPatcher/Shared/USBPatcherDocument.swift": [1636205277, 479378700]
