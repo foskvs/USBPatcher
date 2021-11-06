@@ -19,6 +19,6 @@ Currently the app doesn't work on iOS.
 
 # To-do list
 
- 1. [] List only ports that have \_UPC defined in the SSDT.
- 2. [] Open ACPI Machine Language binaries.
- 3. [] Add the possibility to import the current configuration from the ACPI tables.
+[ ] List only ports that have \_UPC defined in the SSDT.
+[ ] Open ACPI Machine Language binaries.
+[ ] Add the possibility to import the current configuration from the ACPI tables.
