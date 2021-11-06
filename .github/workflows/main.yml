@@ -1,0 +1,18 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-macos:
+    name: Build macOS
+    runs-on: macos-latest
+        
+    env:
+      JOB_TYPE: BUILD
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Compile
+        run: xcodebuild -target "USBPatcher (macOS)"
