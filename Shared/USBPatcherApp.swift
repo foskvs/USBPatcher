@@ -2,7 +2,7 @@
 //  USBPatcherApp.swift
 //  Shared
 //
-//  Created by Gabriele on 03/11/21.
+//  Created by foskvs on 03/11/21.
 //
 
 import SwiftUI

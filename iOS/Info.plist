@@ -8,6 +8,7 @@
 			<key>LSItemContentTypes</key>
 			<array>
 				<string>com.example.plain-text</string>
+				<string>org.acpica.dsl</string>
 			</array>
 			<key>NSUbiquitousDocumentUserActivityType</key>
 			<string>$(PRODUCT_BUNDLE_IDENTIFIER).example-document</string>
@@ -29,6 +30,23 @@
 				<key>public.filename-extension</key>
 				<array>
 					<string>exampletext</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.dsl</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Disassembled ASL File</string>
+			<key>UTTypeIdentifier</key>
+			<string>org.acpica.dsl</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>dsl</string>
 				</array>
 			</dict>
 		</dict>

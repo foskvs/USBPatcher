@@ -15,9 +15,12 @@
 		E0329A9627328055005AA5A7 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0329A7F27328054005AA5A7 /* ContentView.swift */; };
 		E0329A9727328055005AA5A7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E0329A8027328055005AA5A7 /* Assets.xcassets */; };
 		E0329A9827328055005AA5A7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E0329A8027328055005AA5A7 /* Assets.xcassets */; };
+		E08444A6273475720029E330 /* DslParser.m in Sources */ = {isa = PBXBuildFile; fileRef = E08444A5273475720029E330 /* DslParser.m */; };
+		E08444A7273475720029E330 /* DslParser.m in Sources */ = {isa = PBXBuildFile; fileRef = E08444A5273475720029E330 /* DslParser.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		E02FC9032736D3DA00F5B497 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		E0329A7D27328054005AA5A7 /* USBPatcherApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = USBPatcherApp.swift; sourceTree = "<group>"; };
 		E0329A7E27328054005AA5A7 /* USBPatcherDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = USBPatcherDocument.swift; sourceTree = "<group>"; };
 		E0329A7F27328054005AA5A7 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -27,6 +30,10 @@
 		E0329A8D27328055005AA5A7 /* USBPatcher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = USBPatcher.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E0329A8F27328055005AA5A7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E0329A9027328055005AA5A7 /* macOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = macOS.entitlements; sourceTree = "<group>"; };
+		E08444A3273475710029E330 /* USBPatcher (iOS)-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "USBPatcher (iOS)-Bridging-Header.h"; sourceTree = "<group>"; };
+		E08444A4273475710029E330 /* USBPatcher (macOS)-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "USBPatcher (macOS)-Bridging-Header.h"; sourceTree = "<group>"; };
+		E08444A5273475720029E330 /* DslParser.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DslParser.m; sourceTree = "<group>"; };
+		E08444A8273475A00029E330 /* DslParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DslParser.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -50,6 +57,7 @@
 		E0329A7727328053005AA5A7 = {
 			isa = PBXGroup;
 			children = (
+				E02FC9032736D3DA00F5B497 /* README.md */,
 				E0329A7C27328054005AA5A7 /* Shared */,
 				E0329A8727328055005AA5A7 /* iOS */,
 				E0329A8E27328055005AA5A7 /* macOS */,
@@ -62,8 +70,12 @@
 			children = (
 				E0329A7D27328054005AA5A7 /* USBPatcherApp.swift */,
 				E0329A7E27328054005AA5A7 /* USBPatcherDocument.swift */,
+				E08444A5273475720029E330 /* DslParser.m */,
+				E08444A8273475A00029E330 /* DslParser.h */,
 				E0329A7F27328054005AA5A7 /* ContentView.swift */,
 				E0329A8027328055005AA5A7 /* Assets.xcassets */,
+				E08444A3273475710029E330 /* USBPatcher (iOS)-Bridging-Header.h */,
+				E08444A4273475710029E330 /* USBPatcher (macOS)-Bridging-Header.h */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -143,9 +155,11 @@
 				TargetAttributes = {
 					E0329A8427328055005AA5A7 = {
 						CreatedOnToolsVersion = 13.1;
+						LastSwiftMigration = 1310;
 					};
 					E0329A8C27328055005AA5A7 = {
 						CreatedOnToolsVersion = 13.1;
+						LastSwiftMigration = 1310;
 					};
 				};
 			};
@@ -194,6 +208,7 @@
 			files = (
 				E0329A9127328055005AA5A7 /* USBPatcherApp.swift in Sources */,
 				E0329A9327328055005AA5A7 /* USBPatcherDocument.swift in Sources */,
+				E08444A6273475720029E330 /* DslParser.m in Sources */,
 				E0329A9527328055005AA5A7 /* ContentView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -204,6 +219,7 @@
 			files = (
 				E0329A9227328055005AA5A7 /* USBPatcherApp.swift in Sources */,
 				E0329A9427328055005AA5A7 /* USBPatcherDocument.swift in Sources */,
+				E08444A7273475720029E330 /* DslParser.m in Sources */,
 				E0329A9627328055005AA5A7 /* ContentView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -327,6 +343,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
@@ -349,6 +366,8 @@
 				PRODUCT_NAME = USBPatcher;
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Shared/USBPatcher (iOS)-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -359,6 +378,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
@@ -381,6 +401,7 @@
 				PRODUCT_NAME = USBPatcher;
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Shared/USBPatcher (iOS)-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -392,6 +413,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = macOS/macOS.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -410,6 +432,8 @@
 				PRODUCT_NAME = USBPatcher;
 				SDKROOT = macosx;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Shared/USBPatcher (macOS)-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
@@ -419,6 +443,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = macOS/macOS.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -437,6 +462,7 @@
 				PRODUCT_NAME = USBPatcher;
 				SDKROOT = macosx;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Shared/USBPatcher (macOS)-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
