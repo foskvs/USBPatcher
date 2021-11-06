@@ -1,3 +1,5 @@
+[![Build Status](https://github.com/foskvs/USBPatcher/workflows/CI/badge.svg?branch=main)](https://github.com/foskvs/USBPatcher/actions)
+
 # USBPatcher
 
 Simple SwiftUI app that can to patch \_UPC methods to ACPI Source Language files.
