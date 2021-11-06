@@ -21,7 +21,7 @@ The macOS target version should be at least macOS 12.0.
 The iOS target version should be at least iOS 15.
 Currently the app doesn't work on iOS.
 
-# To-do list
+## To-do list
 
  1. [ ] List only ports that have \_UPC defined in the SSDT.
  2. [ ] Open ACPI Machine Language binaries.

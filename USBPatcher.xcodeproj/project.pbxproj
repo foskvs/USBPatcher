@@ -36,6 +36,7 @@
 		E08444A4273475710029E330 /* USBPatcher (macOS)-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "USBPatcher (macOS)-Bridging-Header.h"; sourceTree = "<group>"; };
 		E08444A5273475720029E330 /* DslParser.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DslParser.m; sourceTree = "<group>"; };
 		E08444A8273475A00029E330 /* DslParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DslParser.h; sourceTree = "<group>"; };
+		E0BA52E72737185A005D4C89 /* release.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = release.yml; path = .github/workflows/release.yml; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +61,7 @@
 			isa = PBXGroup;
 			children = (
 				E02FC9052736E00800F5B497 /* main.yml */,
+				E0BA52E72737185A005D4C89 /* release.yml */,
 				E02FC9032736D3DA00F5B497 /* README.md */,
 				E02FC9042736D4B900F5B497 /* LICENSE.txt */,
 				E0329A7C27328054005AA5A7 /* Shared */,
