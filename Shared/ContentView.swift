@@ -10,10 +10,14 @@ import SwiftUI
 struct ContentView: View {
     @Binding var document: USBPatcherDocument
     
+    #if os(macOS)
     let leftOemWidth: CGFloat = 80
-    let rightOemWidth: CGFloat = 160
-    
     let leftLengthWidth: CGFloat = 80
+    #else
+    let leftOemWidth: CGFloat = 50
+    let leftLengthWidth: CGFloat = 70
+    #endif
+    let rightOemWidth: CGFloat = 160
     let rightLengthWidth: CGFloat = 50
     
     #if os(macOS)
@@ -48,6 +52,11 @@ struct ContentView: View {
         VStack {
             //TextEditor(text: $document.text)
             
+            #if os(iOS)
+            Button("Patch") {
+                patch(doc: $document)
+            }
+            #endif
             List($document.portsInfo.ports) { $el in
                 HStack {
                     Spacer()

@@ -4,6 +4,8 @@
 
 Simple SwiftUI app that can to patch \_UPC methods to ACPI Source Language files.
 
+If you use this software please cite this page.
+
 ## Usage
 
  - Open the decompiled SSDT with USBPatcher.

@@ -1,4 +1,4 @@
-name: CI
+name: Build
 
 on:
   push:
@@ -17,5 +17,24 @@ jobs:
         with:
           xcode-version: 13.1
 
-      - name: Compile
-        run: xcodebuild -target "USBPatcher (macOS)"
+      - name: Compile Debug
+        run: xcodebuild -target "USBPatcher (macOS)" -configuration Debug
+
+      - name: Compile Release
+        run: xcodebuild -target "USBPatcher (macOS)" -configuration Release
+
+      - name: Compress the app
+        if: github.event_name == 'release'
+        run: cd build/Release;
+             APP_NAME=$(ls | grep .app$);
+             zip -r ${APP_NAME}.zip ${APP_NAME}
+        
+      - name: Upload binaries to release
+        if: github.event_name == 'release'
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: USBPatcher/build/Release/*.zip
+          tag: ${{ github.ref }}
+          overwrite: true
+          file_glob: true
