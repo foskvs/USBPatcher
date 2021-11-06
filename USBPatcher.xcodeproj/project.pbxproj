@@ -22,6 +22,7 @@
 /* Begin PBXFileReference section */
 		E02FC9032736D3DA00F5B497 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		E02FC9042736D4B900F5B497 /* LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
+		E02FC9052736E00800F5B497 /* main.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = main.yml; path = .github/workflows/main.yml; sourceTree = "<group>"; };
 		E0329A7D27328054005AA5A7 /* USBPatcherApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = USBPatcherApp.swift; sourceTree = "<group>"; };
 		E0329A7E27328054005AA5A7 /* USBPatcherDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = USBPatcherDocument.swift; sourceTree = "<group>"; };
 		E0329A7F27328054005AA5A7 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -58,6 +59,7 @@
 		E0329A7727328053005AA5A7 = {
 			isa = PBXGroup;
 			children = (
+				E02FC9052736E00800F5B497 /* main.yml */,
 				E02FC9032736D3DA00F5B497 /* README.md */,
 				E02FC9042736D4B900F5B497 /* LICENSE.txt */,
 				E0329A7C27328054005AA5A7 /* Shared */,
