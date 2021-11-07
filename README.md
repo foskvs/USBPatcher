@@ -1,4 +1,4 @@
-[![Build Status](https://github.com/foskvs/USBPatcher/workflows/CI/badge.svg?branch=main)](https://github.com/foskvs/USBPatcher/actions)
+[![Build Status](https://github.com/foskvs/USBPatcher/workflows/Build/badge.svg?branch=main)](https://github.com/foskvs/USBPatcher/actions)
 
 # USBPatcher
 
