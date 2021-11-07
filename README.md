@@ -29,7 +29,7 @@ Currently the app doesn't work on iOS.
 ## To-do list
 
  1. [ ] Support tables with \_UPC defined as `Name`.
- 1. [ ] Support ports that are defined in the same table of \_UPC (e.g. DSDTs).
- 1. [ ] List only ports that have \_UPC defined in the SSDT.
- 2. [ ] Open ACPI Machine Language binaries.
- 3. [ ] Add the possibility to import the current configuration from the ACPI tables.
+ 2. [ ] Support ports that are defined in the same table of \_UPC (e.g. DSDTs).
+ 3. [X] List only ports that have \_UPC defined in the SSDT.
+ 4. [ ] Open ACPI Machine Language binaries.
+ 5. [ ] Add the possibility to import the current configuration from the ACPI tables.

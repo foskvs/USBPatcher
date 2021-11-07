@@ -61,7 +61,7 @@ struct ContentView: View {
                 HStack {
                     Spacer()
                     Text(el.portName)
-                        .frame(maxWidth: portNameWidth, alignment: .center)
+                        .frame(maxWidth: portNameWidth, alignment: .leading)
                     Picker("Connector Type", selection: $el.connectorType) {
                         ForEach(0..<connectorTypes.count) {
                             Text(connectorTypes[$0].name).tag(connectorTypes[$0].value)

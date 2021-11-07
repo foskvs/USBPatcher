@@ -9,18 +9,14 @@
 #define DslParser_h
 
 #import <Foundation/Foundation.h>
+#import "DslPatcher.h"
 
 void cParseText(NSString*, NSMutableString*, NSMutableString*, NSMutableString*, NSMutableString*, NSMutableArray*);
 
-void findLength(char, int*, char*, bool*, int*);
-void findOemId(char, int*, char*, bool*, int*);
+void findOemIdOrLength(char, int*, char*, bool*, int*, const char*, const char, const char);
 
 void findHubDefinition(char, int*, char*, bool*, int*);
 bool findPorts(char, int*, char*, bool*, int*, char*);
 
-void patchPort(NSMutableString*, NSString*, bool, NSInteger);
-
-void findCommentStatus(char, int*);
-void searchWord(const char*, int*, char, bool*);
 
 #endif /* DslParser_h */

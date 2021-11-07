@@ -21,6 +21,7 @@ struct USBPatcherDocument: FileDocument {
     var tableOemId: String
     var tableOemIdHex: String
     var portsList: [String]
+    var tempPortsList: [String]
 
     var portsInfo: PortsInformation
     //@State private var sortOrder = [KeyPathComparator(\Person.givenName)]
@@ -54,8 +55,18 @@ struct USBPatcherDocument: FileDocument {
         tableOemId = ""
         tableOemIdHex = ""
         portsList = []
+        tempPortsList = []
         
-        parseText(text: text, length: &tableLength, lengthHex: &tableLengthHex, oemId: &tableOemId, oemIdHex: &tableOemIdHex, portsList: &portsList)
+        parseText(text: text, length: &tableLength, lengthHex: &tableLengthHex, oemId: &tableOemId, oemIdHex: &tableOemIdHex, portsList: &tempPortsList)
+        
+        for port in tempPortsList {
+            let textNS = NSMutableString(string: text)
+            var result: Bool = false
+            patchPort(textNS, port, false, 0xFF, true, &result)
+            if (result == true) {
+                portsList.append(port)
+            }
+        }
         
         self.portsInfo = PortsInformation(document: self)
         //self.portsInfo = PortsInformation()
@@ -77,8 +88,18 @@ struct USBPatcherDocument: FileDocument {
         tableOemId = ""
         tableOemIdHex = ""
         portsList = []
+        tempPortsList = []
         
-        parseText(text: text, length: &tableLength, lengthHex: &tableLengthHex, oemId: &tableOemId, oemIdHex: &tableOemIdHex, portsList: &portsList)
+        parseText(text: text, length: &tableLength, lengthHex: &tableLengthHex, oemId: &tableOemId, oemIdHex: &tableOemIdHex, portsList: &tempPortsList)
+        
+        for port in tempPortsList {
+            let textNS = NSMutableString(string: text)
+            var result: Bool = false
+            patchPort(textNS, port, false, 0xFF, true, &result)
+            if (result == true) {
+                portsList.append(port)
+            }
+        }
         
         self.portsInfo = PortsInformation(document: self)
     }
@@ -137,9 +158,10 @@ func parseText(text: String, length: inout String, lengthHex: inout String, oemI
 
 func patch(doc: Binding<USBPatcherDocument>) {
     for port in doc.portsInfo.ports {
-        //print(port)
+        //print(port.portName.wrappedValue)
         let textNS = NSMutableString(string: doc.text.wrappedValue)
-        patchPort(textNS, port.portName.wrappedValue, port.isEnabled.wrappedValue, port.connectorType.wrappedValue)
+        var found: Bool = false
+        patchPort(textNS, port.portName.wrappedValue, port.isEnabled.wrappedValue, port.connectorType.wrappedValue, true, &found)
         doc.text.wrappedValue = textNS as String
     }
     //let textNS = NSMutableString(string: doc.text.wrappedValue)
