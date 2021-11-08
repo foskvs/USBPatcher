@@ -62,7 +62,7 @@ struct USBPatcherDocument: FileDocument {
         for port in tempPortsList {
             let textNS = NSMutableString(string: text)
             var result: Bool = false
-            patchPort(textNS, port, false, 0xFF, true, &result)
+            patchPort(textNS, port, false, 0xFF, false, &result)
             if (result == true) {
                 portsList.append(port)
             }
@@ -95,7 +95,7 @@ struct USBPatcherDocument: FileDocument {
         for port in tempPortsList {
             let textNS = NSMutableString(string: text)
             var result: Bool = false
-            patchPort(textNS, port, false, 0xFF, true, &result)
+            patchPort(textNS, port, false, 0xFF, false, &result)
             if (result == true) {
                 portsList.append(port)
             }

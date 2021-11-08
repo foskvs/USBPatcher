@@ -17,7 +17,9 @@ If you use this software please cite this page.
 
 ## Supported configurations
 
-Currently only SSDTs with `Method (_UPC, ...` and with ports declared on an external table (e.g. DSDT) are supported.
+Currently only SSDTs with with ports declared on an external table (e.g. DSDT) are supported.
+
+Both `Name (_UPC, ...` and `Method (_UPC, ...` are supported.
 
 ## Warning
 
@@ -28,7 +30,7 @@ Currently the app doesn't work on iOS.
 
 ## To-do list
 
- 1. [ ] Support tables with \_UPC defined as `Name`.
+ 1. [X] Support tables with \_UPC defined as `Name`.
  2. [ ] Support ports that are defined in the same table of \_UPC (e.g. DSDTs).
  3. [X] List only ports that have \_UPC defined in the SSDT.
  4. [ ] Open ACPI Machine Language binaries.
