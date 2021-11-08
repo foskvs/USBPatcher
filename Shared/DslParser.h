@@ -13,7 +13,7 @@
 
 void cParseText(NSString*, NSMutableString*, NSMutableString*, NSMutableString*, NSMutableString*, NSMutableArray*);
 
-void findOemIdOrLength(char, int*, char*, bool*, int*, const char*, const char, const char);
+void findOemIdOrLength(char, int*, char*, bool*, int*, const char*, const unsigned int, const char, const char);
 
 void findHubDefinition(char, int*, char*, bool*, int*);
 bool findPorts(char, int*, char*, bool*, int*, char*);

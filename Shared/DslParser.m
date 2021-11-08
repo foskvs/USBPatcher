@@ -54,10 +54,10 @@ void cParseText(NSString* source, NSMutableString* lengthNS, NSMutableString* le
         }
         else if (commentBlockStatus == 3) {
             if (foundLength == false) {
-                findOemIdOrLength(text[i], &counter, length, &foundLength, &lengthPos, "Length", '(', ')');
+                findOemIdOrLength(text[i], &counter, length, &foundLength, &lengthPos, "Length", strlen("Length"), '(', ')');
             }
             else if (foundOemId == false) {
-                findOemIdOrLength(text[i], &counter, oemId, &foundOemId, &lengthPos, "OEMTableID", '"', '"');
+                findOemIdOrLength(text[i], &counter, oemId, &foundOemId, &lengthPos, "OEMTableID", strlen("OEMTableID"), '"', '"');
             }
         }
     }
@@ -101,8 +101,8 @@ void cParseText(NSString* source, NSMutableString* lengthNS, NSMutableString* le
     free(text);
 }
 
-void findOemIdOrLength (char c, int* counter, char* oemIdOrlength, bool* found, int* pos, const char* referenceString, const char beginOfMatch, const char endOfMatch) {
-    const unsigned long size = strlen(referenceString);
+void findOemIdOrLength (char c, int* counter, char* oemIdOrlength, bool* found, int* pos, const char* referenceString, const unsigned int size, const char beginOfMatch, const char endOfMatch) {
+    //const unsigned long size = strlen(referenceString);
     
     int count = *counter;
     bool f = *found;
