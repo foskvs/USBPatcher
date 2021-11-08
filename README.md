@@ -2,7 +2,7 @@
 
 # USBPatcher
 
-Simple SwiftUI app that can to patch \_UPC methods to ACPI Source Language files.
+Simple SwiftUI app that can patch \_UPC methods to ACPI Source Language files.
 
 If you use this software please cite this page.
 
