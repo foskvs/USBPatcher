@@ -11,6 +11,7 @@
 			<array>
 				<string>com.example.plain-text</string>
 				<string>org.acpica.dsl</string>
+				<string>org.acpica.aml</string>
 			</array>
 			<key>NSUbiquitousDocumentUserActivityType</key>
 			<string>$(PRODUCT_BUNDLE_IDENTIFIER).example-document</string>
@@ -49,6 +50,21 @@
 				<key>public.filename-extension</key>
 				<array>
 					<string>dsl</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeIdentifier</key>
+			<string>org.acpica.aml</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>aml</string>
 				</array>
 			</dict>
 		</dict>

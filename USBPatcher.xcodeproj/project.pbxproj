@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E0153876273AD464005B94BA /* iasl in Resources */ = {isa = PBXBuildFile; fileRef = E0153875273AD01E005B94BA /* iasl */; };
 		E0329A9127328055005AA5A7 /* USBPatcherApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0329A7D27328054005AA5A7 /* USBPatcherApp.swift */; };
 		E0329A9227328055005AA5A7 /* USBPatcherApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0329A7D27328054005AA5A7 /* USBPatcherApp.swift */; };
 		E0329A9327328055005AA5A7 /* USBPatcherDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0329A7E27328054005AA5A7 /* USBPatcherDocument.swift */; };
@@ -22,6 +23,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		E0153875273AD01E005B94BA /* iasl */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = iasl; sourceTree = "<group>"; };
 		E02FC9032736D3DA00F5B497 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		E02FC9042736D4B900F5B497 /* LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		E02FC9052736E00800F5B497 /* main.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = main.yml; path = .github/workflows/main.yml; sourceTree = "<group>"; };
@@ -114,6 +116,7 @@
 			children = (
 				E0329A8F27328055005AA5A7 /* Info.plist */,
 				E0329A9027328055005AA5A7 /* macOS.entitlements */,
+				E0153875273AD01E005B94BA /* iasl */,
 			);
 			path = macOS;
 			sourceTree = "<group>";
@@ -208,6 +211,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E0329A9827328055005AA5A7 /* Assets.xcassets in Resources */,
+				E0153876273AD464005B94BA /* iasl in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

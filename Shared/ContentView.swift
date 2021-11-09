@@ -9,6 +9,8 @@ import SwiftUI
 
 struct ContentView: View {
     @Binding var document: USBPatcherDocument
+    @State var url: String
+    
     
     #if os(macOS)
     let leftOemWidth: CGFloat = 80
@@ -56,6 +58,7 @@ struct ContentView: View {
         VStack {
             //TextEditor(text: $document.text)
             
+            Text(document.urlString)
             #if os(iOS)
             Button("Patch") {
                 patch(doc: $document)
@@ -129,6 +132,6 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView(document: .constant(USBPatcherDocument()))
+        ContentView(document: .constant(USBPatcherDocument()), url: "")
     }
 }
