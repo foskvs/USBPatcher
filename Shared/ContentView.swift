@@ -58,7 +58,7 @@ struct ContentView: View {
         VStack {
             //TextEditor(text: $document.text)
             
-            Text(document.urlString)
+            //Text(document.urlString)
             #if os(iOS)
             Button("Patch") {
                 patch(doc: $document)

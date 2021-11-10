@@ -6,6 +6,11 @@ Simple SwiftUI app that can patch \_UPC methods to ACPI Source Language files.
 
 If you use this software please cite this page.
 
+The app includes `iasl` as a bundle inside `Contents/Resources` (it is used to compile/decompile AML files).
+You can update it to the latest version by downloading it from [here](https://acpica.org/downloads).
+
+Source code is [here](https://github.com/acpica/acpica).
+
 ## Usage
 
 You can open ACPI Machine Language binaries directly, so there is no need to recompile the SSDT after you patch it.
