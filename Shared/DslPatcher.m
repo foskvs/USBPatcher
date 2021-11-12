@@ -2,7 +2,7 @@
 //  DslPatcher.m
 //  USBPatcher
 //
-//  Created by Gabriele on 07/11/21.
+//  Created by foskv on 07/11/21.
 //
 
 #import "DslPatcher.h"

@@ -9,6 +9,8 @@ If you use this software please cite this page.
 The app includes `iasl` as a bundle inside `Contents/Resources` (it is used to compile/decompile AML files).
 You can update it to the latest version by downloading it from [here](https://acpica.org/downloads).
 
+You can find prebuilt binaries [here](https://github.com/macos86/ACPI-Tools-Binaries-generator).
+
 Source code is [here](https://github.com/acpica/acpica).
 
 ## Usage
