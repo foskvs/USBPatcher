@@ -221,7 +221,7 @@ struct USBPatcherDocument: FileDocument {
     func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {
         let data: Data
         if (isBinary == true) {
-            
+            #if os(macOS)
             let f = FileWrapper(regularFileWithContents: text.data(using: .utf8)!)
             try! f.write(to: disassembledUrl, options: .atomic, originalContentsURL: nil)
             
@@ -231,6 +231,9 @@ struct USBPatcherDocument: FileDocument {
             let binaryWrapper = try FileWrapper(url: newUrl)
             
             data = binaryWrapper.regularFileContents!
+            #else
+            data = text.data(using: .utf8)!
+            #endif
         }
         else {
             data = text.data(using: .utf8)!
