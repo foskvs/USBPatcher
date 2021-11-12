@@ -2,7 +2,7 @@
 //  DslPatcher.h
 //  USBPatcher
 //
-//  Created by foskv on 07/11/21.
+//  Created by foskvs on 07/11/21.
 //
 
 #ifndef DslPatcher_h
