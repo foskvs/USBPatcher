@@ -11,6 +11,7 @@
 void cParseText(NSString* source, NSMutableString* lengthNS, NSMutableString* lengthHexNS, NSMutableString* oemIdNS, NSMutableString* oemIdHexNS, NSMutableArray* portsList) {
     
     int commentBlockStatus = 0;
+    int stringStatus = 0;
     bool foundLength = false;
     bool foundOemId = false;
     int counter = 0;
@@ -37,8 +38,8 @@ void cParseText(NSString* source, NSMutableString* lengthNS, NSMutableString* le
     
     for (unsigned long i = 0; i < textSize && (foundLength && foundOemId && foundHub && foundPorts) == false; i++) {
         
-        findCommentStatus(text[i], &commentBlockStatus);
-        if (commentBlockStatus == 0) {
+        findCommentStatus(text[i], &commentBlockStatus, &stringStatus);
+        if (commentBlockStatus == 0 && stringStatus == 0) {
             if (foundHub == false) {
                 findHubDefinition(text[i], &counter, hubName, &foundHub, &hubPos);
             }

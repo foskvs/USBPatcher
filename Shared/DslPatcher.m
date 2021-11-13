@@ -27,6 +27,7 @@ void patchPort(NSMutableString* text, NSString* portName, bool isEnabled, NSInte
     int counter = 0;
     
     int commentBlockStatus = 0;
+    int stringStatus = 0;
     //bool foundPort = false;
     bool foundUPC = false;
     
@@ -34,9 +35,9 @@ void patchPort(NSMutableString* text, NSString* portName, bool isEnabled, NSInte
     
     for (unsigned long i = 0; i < textSize && foundUPC == false; i++) {
         
-        findCommentStatus(cText[i], &commentBlockStatus);
+        findCommentStatus(cText[i], &commentBlockStatus, &stringStatus);
         
-        if (commentBlockStatus == 0) {
+        if (commentBlockStatus == 0 && stringStatus == 0) {
             if (cText[i] == ' ' || cText[i] == '\n') {
             }
             else if (counter == nameSize) {
@@ -48,8 +49,8 @@ void patchPort(NSMutableString* text, NSString* portName, bool isEnabled, NSInte
                     counter = 0;
                     int bracketCount = 0;
                     for (; i < textSize && foundUPC == false && bracketCount >= 0; i++) {
-                        findCommentStatus(cText[i], &commentBlockStatus);
-                        if (commentBlockStatus == 0) {
+                        findCommentStatus(cText[i], &commentBlockStatus, &stringStatus);
+                        if (commentBlockStatus == 0 && stringStatus == 0) {
                             switch (cText[i]) {
                                 case '{':
                                     bracketCount++;
@@ -67,7 +68,7 @@ void patchPort(NSMutableString* text, NSString* portName, bool isEnabled, NSInte
                                             return;
                                         }
                                         bracketCount = 0;
-                                        applyPatch(text, &i, cText, &commentBlockStatus, &bracketCount, textSize, isEnabled, connectorType);
+                                        applyPatch(text, &i, cText, &commentBlockStatus, &stringStatus, &bracketCount, textSize, isEnabled, connectorType);
                                     }
                                     break;
                             }
@@ -91,8 +92,9 @@ void patchPort(NSMutableString* text, NSString* portName, bool isEnabled, NSInte
     free(cPortName);
 }
 
-void findCommentStatus (char c, int* stat) {
-    int commentBlockStatus = *stat;
+void findCommentStatus (char c, int* commStat, int* strStat) {
+    int commentBlockStatus = *commStat;
+    int stringStatus = *strStat;
     
     if (commentBlockStatus == 4) {
         if (c == '/') {
@@ -105,24 +107,35 @@ void findCommentStatus (char c, int* stat) {
     else {
         switch (c) {
             case '/':
-                if (commentBlockStatus == 0) {
-                    commentBlockStatus = 1;
-                }
-                else if (commentBlockStatus == 1) {
-                    commentBlockStatus = 2;
+                if (stringStatus == 0) {
+                    if (commentBlockStatus == 0) {
+                        commentBlockStatus = 1;
+                    }
+                    else if (commentBlockStatus == 1) {
+                        commentBlockStatus = 2;
+                    }
                 }
                 break;
             case '\n':
-                if (commentBlockStatus == 2 || commentBlockStatus == 1) {
-                    commentBlockStatus = 0;
+                if (stringStatus == 0) {
+                    if (commentBlockStatus == 2 || commentBlockStatus == 1) {
+                        commentBlockStatus = 0;
+                    }
                 }
                 break;
             case '*':
-                if (commentBlockStatus == 1) {
-                    commentBlockStatus = 3;
+                if (stringStatus == 0) {
+                    if (commentBlockStatus == 1) {
+                        commentBlockStatus = 3;
+                    }
+                    else if (commentBlockStatus == 3) {
+                        commentBlockStatus = 4;
+                    }
                 }
-                else if (commentBlockStatus == 3) {
-                    commentBlockStatus = 4;
+                break;
+            case '"':
+                if (commentBlockStatus == 0) {
+                    stringStatus = (stringStatus + 1)%2;
                 }
                 break;
             default:
@@ -130,7 +143,8 @@ void findCommentStatus (char c, int* stat) {
         }
     }
     
-    *stat = commentBlockStatus;
+    *commStat = commentBlockStatus;
+    *strStat = stringStatus;
 }
 
 void searchWord(const char* word, int* count, char letter, bool* f) {
@@ -160,22 +174,23 @@ void searchWord(const char* word, int* count, char letter, bool* f) {
     *f = found;
 }
 
-void applyPatch (NSMutableString* text, unsigned long* it, char* cText, int* cBS, int* br, const unsigned long textSize, bool isEnabled, NSInteger connectorType) {
+void applyPatch (NSMutableString* text, unsigned long* it, char* cText, int* cBS, int* sS, int* br, const unsigned long textSize, bool isEnabled, NSInteger connectorType) {
     //int bracketCount = *br;
     unsigned long i = *it;
     int commentBlockStatus = *cBS;
+    int stringStatus = *sS;
     
     
     bool hasMethod = isMethod(cText, i);
     
     for (; i < textSize && *br == 0; i++) {
-        findCommentStatus(cText[i], &commentBlockStatus);
-        if (commentBlockStatus == 0) {
+        findCommentStatus(cText[i], &commentBlockStatus, &stringStatus);
+        if (commentBlockStatus == 0 && stringStatus == 0) {
             if (hasMethod == true) {
-                patchMethod(text, &i, cText, &commentBlockStatus, br, textSize, isEnabled, connectorType);
+                patchMethod(text, &i, cText, &commentBlockStatus, &stringStatus, br, textSize, isEnabled, connectorType);
             }
             else {
-                patchName(text, &i, cText, &commentBlockStatus, br, textSize, isEnabled, connectorType);
+                patchName(text, &i, cText, &commentBlockStatus, &stringStatus, br, textSize, isEnabled, connectorType);
             }
         }
     }
@@ -183,6 +198,7 @@ void applyPatch (NSMutableString* text, unsigned long* it, char* cText, int* cBS
     //*br = bracketCount;
     *it = i;
     *cBS = commentBlockStatus;
+    *sS = stringStatus;
 }
 
 bool isMethod (char* cText, unsigned long i) {
@@ -216,10 +232,11 @@ bool isMethod (char* cText, unsigned long i) {
     return true;
 }
 
-void patchMethod(NSMutableString* text, unsigned long* it, char* cText, int* cBS, int* br, const unsigned long textSize, bool isEnabled, NSInteger connectorType) {
+void patchMethod(NSMutableString* text, unsigned long* it, char* cText, int* cBS, int*sS, int* br, const unsigned long textSize, bool isEnabled, NSInteger connectorType) {
     unsigned long i = *it;
     int bracketCount = *br;
     int commentBlockStatus = *cBS;
+    int stringStatus = *sS;
     
     NSMutableString* previousUPC = [[NSMutableString alloc] init];
     
@@ -240,12 +257,12 @@ void patchMethod(NSMutableString* text, unsigned long* it, char* cText, int* cBS
                     spaces++;
                 }
             }
-            findCommentStatus(cText[i], &commentBlockStatus);
+            findCommentStatus(cText[i], &commentBlockStatus, &stringStatus);
             //char* ch = (char*)malloc((2) * sizeof(char));
             char ch[2];
             ch[0] = cText[i];
             ch[1] = '\0';
-            if (commentBlockStatus == 0) {
+            if (commentBlockStatus == 0 && stringStatus == 0) {
                 switch (cText[i]) {
                     case '{':
                         bracketCount++;
@@ -336,12 +353,14 @@ void patchMethod(NSMutableString* text, unsigned long* it, char* cText, int* cBS
     *it = i;
     *br = bracketCount;
     *cBS = commentBlockStatus;
+    *sS = stringStatus;
 }
 
-void patchName(NSMutableString* text, unsigned long* it, char* cText, int* cBS, int* br, const unsigned long textSize, bool isEnabled, NSInteger connectorType) {
+void patchName(NSMutableString* text, unsigned long* it, char* cText, int* cBS, int* sS, int* br, const unsigned long textSize, bool isEnabled, NSInteger connectorType) {
     unsigned long i = *it;
     int bracketCount = *br;
     int commentBlockStatus = *cBS;
+    int stringStatus = *sS;
     
     NSMutableString* previousUPC = [[NSMutableString alloc] init];
     //NSMutableString* mString = [[NSMutableString alloc] initWithString: text];
@@ -364,12 +383,12 @@ void patchName(NSMutableString* text, unsigned long* it, char* cText, int* cBS, 
                     spaces++;
                 }
             }
-            findCommentStatus(cText[i], &commentBlockStatus);
+            findCommentStatus(cText[i], &commentBlockStatus, &stringStatus);
             //char* ch = (char*)malloc((2) * sizeof(char));
             char ch[2];
             ch[0] = cText[i];
             ch[1] = '\0';
-            if (commentBlockStatus == 0) {
+            if (commentBlockStatus == 0 && stringStatus == 0) {
                 switch (cText[i]) {
                     case '(':
                         bracketCount++;
@@ -462,4 +481,5 @@ void patchName(NSMutableString* text, unsigned long* it, char* cText, int* cBS, 
     *it = i;
     *br = bracketCount;
     *cBS = commentBlockStatus;
+    *sS = stringStatus;
 }

@@ -237,7 +237,6 @@ struct USBPatcherDocument: FileDocument {
         }
         else {
             data = text.data(using: .utf8)!
-            print(data)
         }
         return .init(regularFileWithContents: data)
     }
@@ -290,12 +289,14 @@ func parseText(text: String, length: inout String, lengthHex: inout String, oemI
 }
 
 func patch(doc: Binding<USBPatcherDocument>) {
-    for port in doc.portsInfo.ports {
-        //print(port.portName.wrappedValue)
-        let textNS = NSMutableString(string: doc.text.wrappedValue)
-        var found: Bool = false
-        patchPort(textNS, port.portName.wrappedValue, port.isEnabled.wrappedValue, port.connectorType.wrappedValue, true, &found)
-        doc.text.wrappedValue = textNS as String
+    if (doc.portsInfo.ports.count > 0) {
+        for port in doc.portsInfo.ports {
+            //print(port.portName.wrappedValue)
+            let textNS = NSMutableString(string: doc.text.wrappedValue)
+            var found: Bool = false
+            patchPort(textNS, port.portName.wrappedValue, port.isEnabled.wrappedValue, port.connectorType.wrappedValue, true, &found)
+            doc.text.wrappedValue = textNS as String
+        }
     }
     //let textNS = NSMutableString(string: doc.text.wrappedValue)
     //patchPort(textNS, doc.portsInfo.ports[0].portName.wrappedValue, doc.portsInfo.ports[0].isEnabled.wrappedValue, doc.portsInfo.ports[0].connectorType.wrappedValue)
