@@ -7,90 +7,6 @@
 
 #import "DslPatcher.h"
 
-void patchPort(NSMutableString* text, NSString* portName, bool isEnabled, NSInteger connectorType, bool patching, bool* foundPort) {
-    
-    //NSError *error = NULL;
-    //NSString* testString = [[NSString alloc] initWithString:text];
-    //NSString* pattern = @"Method *\\(_UPC, *0, *NotSerialized\\).*\\n( *)\\{ *\\n";
-    
-    
-    //NSRegularExpression* regex = [NSRegularExpression regularExpressionWithPattern: pattern options:0 error:&error];
-    //NSMutableString* mString = [[NSMutableString alloc] initWithString: text];
-    
-    const unsigned long textSize = text.length;
-    char* cText = (char*)malloc((textSize) * sizeof(char));
-    strcpy(cText, [text UTF8String]);
-    
-    const unsigned long nameSize = portName.length;
-    char* cPortName = (char*)malloc((nameSize) * sizeof(char));
-    strcpy(cPortName, [portName UTF8String]);
-    int counter = 0;
-    
-    int commentBlockStatus = 0;
-    int stringStatus = 0;
-    //bool foundPort = false;
-    bool foundUPC = false;
-    
-    //NSMutableString* previousUPC = [[NSMutableString alloc] init];
-    
-    for (unsigned long i = 0; i < textSize && foundUPC == false; i++) {
-        
-        findCommentStatus(cText[i], &commentBlockStatus, &stringStatus);
-        
-        if (commentBlockStatus == 0 && stringStatus == 0) {
-            if (cText[i] == ' ' || cText[i] == '\n') {
-            }
-            else if (counter == nameSize) {
-                if (cText[i] == ')') {
-                    //printf("Found %s\n", cPortName);
-                    //NSLog(@"%@", portName);
-                    //foundPort = true;
-                    
-                    counter = 0;
-                    int bracketCount = 0;
-                    for (; i < textSize && foundUPC == false && bracketCount >= 0; i++) {
-                        findCommentStatus(cText[i], &commentBlockStatus, &stringStatus);
-                        if (commentBlockStatus == 0 && stringStatus == 0) {
-                            switch (cText[i]) {
-                                case '{':
-                                    bracketCount++;
-                                    break;
-                                case '}':
-                                    bracketCount--;
-                                    break;
-                                default:
-                                    searchWord("(_UPC,", &counter, cText[i], &foundUPC);
-                                    if (foundUPC == true) {
-                                        // Here !!!!!
-                                        *foundPort = true;
-                                        //printf("Found _UPC for port %s\n", cPortName);
-                                        if (patching ==  false) {
-                                            return;
-                                        }
-                                        bracketCount = 0;
-                                        applyPatch(text, &i, cText, &commentBlockStatus, &stringStatus, &bracketCount, textSize, isEnabled, connectorType);
-                                    }
-                                    break;
-                            }
-                        }
-                    }
-                }
-                else {
-                    counter = 0;
-                }
-            }
-            else if (cText[i] == cPortName[counter]) {
-                counter++;
-            }
-            else {
-                counter = 0;
-            }
-        }
-    }
-    
-    free(cText);
-    free(cPortName);
-}
 
 void findCommentStatus (char c, int* commStat, int* strStat) {
     int commentBlockStatus = *commStat;
@@ -147,7 +63,7 @@ void findCommentStatus (char c, int* commStat, int* strStat) {
     *strStat = stringStatus;
 }
 
-void searchWord(const char* word, int* count, char letter, bool* f) {
+void searchWord(const char* word, int* count, char letter, bool* f, char previousLetter) {
     unsigned long length = strlen(word);
     
     int c = *count;
@@ -158,10 +74,17 @@ void searchWord(const char* word, int* count, char letter, bool* f) {
     }
     
     if (c == length) {
-        found = true;
+        if (is_separator(letter)) {
+            found = true;
+        }
         c = 0;
     }
     else {
+        if (c == 0) {
+            if (!is_separator(previousLetter)) {
+                return;
+            }
+        }
         if (letter == word[c]) {
             c++;
         }
@@ -174,12 +97,11 @@ void searchWord(const char* word, int* count, char letter, bool* f) {
     *f = found;
 }
 
-void applyPatch (NSMutableString* text, unsigned long* it, char* cText, int* cBS, int* sS, int* br, const unsigned long textSize, bool isEnabled, NSInteger connectorType) {
+void applyPatch (NSMutableString* text, unsigned long* it, const char* cText, int* cBS, int* sS, int* br, const unsigned long textSize, bool isEnabled, long connectorType) {
     //int bracketCount = *br;
     unsigned long i = *it;
     int commentBlockStatus = *cBS;
     int stringStatus = *sS;
-    
     
     bool hasMethod = isMethod(cText, i);
     
@@ -201,7 +123,7 @@ void applyPatch (NSMutableString* text, unsigned long* it, char* cText, int* cBS
     *sS = stringStatus;
 }
 
-bool isMethod (char* cText, unsigned long i) {
+bool isMethod (const char* cText, unsigned long i) {
     
     const char comparison[] = "(_UPC,";
     int upcSize = (int)strlen(comparison) - 1;
@@ -232,7 +154,7 @@ bool isMethod (char* cText, unsigned long i) {
     return true;
 }
 
-void patchMethod(NSMutableString* text, unsigned long* it, char* cText, int* cBS, int*sS, int* br, const unsigned long textSize, bool isEnabled, NSInteger connectorType) {
+void patchMethod(NSMutableString* text, unsigned long* it, const char* cText, int* cBS, int*sS, int* br, const unsigned long textSize, bool isEnabled, NSInteger connectorType) {
     unsigned long i = *it;
     int bracketCount = *br;
     int commentBlockStatus = *cBS;
@@ -356,7 +278,7 @@ void patchMethod(NSMutableString* text, unsigned long* it, char* cText, int* cBS
     *sS = stringStatus;
 }
 
-void patchName(NSMutableString* text, unsigned long* it, char* cText, int* cBS, int* sS, int* br, const unsigned long textSize, bool isEnabled, NSInteger connectorType) {
+void patchName(NSMutableString* text, unsigned long* it, const char* cText, int* cBS, int* sS, int* br, const unsigned long textSize, bool isEnabled, NSInteger connectorType) {
     unsigned long i = *it;
     int bracketCount = *br;
     int commentBlockStatus = *cBS;
@@ -482,4 +404,55 @@ void patchName(NSMutableString* text, unsigned long* it, char* cText, int* cBS, 
     *br = bracketCount;
     *cBS = commentBlockStatus;
     *sS = stringStatus;
+}
+
+bool is_separator (const char letter) {
+    bool result = false;
+    switch (letter) {
+        case '{':
+            result = true;
+        case '}':
+            result = true;
+        case '(':
+            result = true;
+        case ')':
+            result = true;
+        case '[':
+            result = true;
+        case ']':
+            result = true;
+        case ',':
+            result = true;
+        case '\n':
+            result = true;
+        case '\t':
+            result = true;
+        case ' ':
+            result = true;
+        case '>':
+            result = true;
+        case '<':
+            result = true;
+        case '=':
+            result = true;
+        case '!':
+            result = true;
+        default:
+            break;
+    }
+    return result;
+}
+
+NSMutableString* cutPortName (NSString* name) {
+    
+    
+    NSMutableString* mString = [[NSMutableString alloc] initWithString: name];
+    NSString* pattern = @".*\\.";
+    NSError *error = NULL;
+    NSMutableString* connectorTypeString = [[NSMutableString alloc] initWithString:@""];
+    
+    NSRegularExpression* regex = [NSRegularExpression regularExpressionWithPattern: pattern options:0 error:&error];
+    [regex replaceMatchesInString: mString options:0 range: NSMakeRange(0, mString.length) withTemplate: connectorTypeString];
+    
+    return mString;
 }

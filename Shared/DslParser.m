@@ -8,7 +8,7 @@
 
 #import "DslParser.h"
 
-void cParseText(NSString* source, NSMutableString* lengthNS, NSMutableString* lengthHexNS, NSMutableString* oemIdNS, NSMutableString* oemIdHexNS, NSMutableArray* portsList) {
+void cParseText(NSMutableString* source, NSMutableString* lengthNS, NSMutableString* lengthHexNS, NSMutableString* oemIdNS, NSMutableString* oemIdHexNS, NSMutableArray* portsList, NSMutableArray* fullNamesList, bool patch, NSMutableArray* portNameToPatch, NSMutableArray* fullPortNameToPatch, NSMutableArray* isEnabled, NSMutableArray* connectorType) {
     
     int commentBlockStatus = 0;
     int stringStatus = 0;
@@ -27,38 +27,56 @@ void cParseText(NSString* source, NSMutableString* lengthNS, NSMutableString* le
     
     
     bool foundHub = false;
-    char hubName[30];
-    int hubPos = 0;
     
     bool foundPorts = false;
-    char portsName[10];
-    int portsPos = 0;
     
-    NSMutableArray* portsDefined = [[NSMutableArray alloc] init];
+    int upcCounter = 0;
+    bool upcFound = false;
+    int scopeCounter = 0;
+    bool scopeFound = false;
+    int deviceCounter = 0;
+    bool deviceFound = false;
+    int methodCounter = 0;
+    bool methodFound = false;
+    int packageCounter = 0;
+    bool packageFound = false;
+    int ifCounter = 0;
+    bool ifFound = false;
+    int elseCounter = 0;
+    bool elseFound = false;
+    int elseifCounter = 0;
+    bool elseifFound = false;
+    int whileCounter = 0;
+    bool whileFound = false;
+    int bufferCounter = 0;
+    bool bufferFound = false;
+    int fieldCounter = 0;
+    bool fieldFound = false;
+    int irqCounter = 0;
+    bool irqFound = false;
+    NSMutableArray* scopeArray = [[NSMutableArray alloc] init];
     
-    for (unsigned long i = 0; i < textSize && (foundLength && foundOemId && foundHub && foundPorts) == false; i++) {
+    bool patched = false;
+    
+    for (unsigned long i = 0; i < textSize && (foundLength && foundOemId && foundHub && foundPorts) == false && patched == false; i++) {
         
         findCommentStatus(text[i], &commentBlockStatus, &stringStatus);
         if (commentBlockStatus == 0 && stringStatus == 0) {
-            if (foundHub == false) {
-                findHubDefinition(text[i], &counter, hubName, &foundHub, &hubPos);
+            findUPC(text, textSize, &i, &commentBlockStatus, &stringStatus, &upcCounter, &upcFound, &scopeCounter, &scopeFound, &deviceCounter, &deviceFound, &methodCounter, &methodFound, &packageCounter, &packageFound, &ifCounter, &ifFound, &elseCounter, &elseFound, &elseifCounter, &elseifFound, &whileCounter, &whileFound, &bufferCounter, &bufferFound, &fieldCounter, &fieldFound, &irqCounter, &irqFound, scopeArray, portsList, fullNamesList, patch, portNameToPatch, fullPortNameToPatch, isEnabled, connectorType, source, &patched);
+            if (text[i] == '}') {
+                //NSLog(@"Before: %@", scopeArray);
+                [scopeArray removeLastObject];
+                //NSLog(@"After: %@", scopeArray);
             }
-            else {
-                if (foundPorts == false) {
-                    if (findPorts(text[i], &counter, portsName, &foundPorts, &portsPos, hubName)) {
-                        [portsDefined addObject:[[NSString alloc] initWithCString:portsName encoding:NSUTF8StringEncoding]];
-                        //printf("%s\n", portsName);
-                    }
-                }
-            }
-            //print(l)
         }
         else if (commentBlockStatus == 3) {
-            if (foundLength == false) {
-                findOemIdOrLength(text[i], &counter, length, &foundLength, &lengthPos, "Length", strlen("Length"), '(', ')');
-            }
-            else if (foundOemId == false) {
-                findOemIdOrLength(text[i], &counter, oemId, &foundOemId, &lengthPos, "OEMTableID", strlen("OEMTableID"), '"', '"');
+            if (patch == false) {
+                if (foundLength == false) {
+                    findOemIdOrLength(text[i], &counter, length, &foundLength, &lengthPos, "Length", strlen("Length"), '(', ')');
+                }
+                else if (foundOemId == false) {
+                    findOemIdOrLength(text[i], &counter, oemId, &foundOemId, &lengthPos, "OEMTableID", strlen("OEMTableID"), '"', '"');
+                }
             }
         }
     }
@@ -81,22 +99,11 @@ void cParseText(NSString* source, NSMutableString* lengthNS, NSMutableString* le
         
         for(NSUInteger i = 0; i < strlen(oemId); i++ )
         {
-            [hexString appendFormat:@"%02x", oemId[i]]; /*EDITED PER COMMENT BELOW*/
+            [hexString appendFormat:@"%02x", oemId[i]];
         }
         
         [oemIdHexNS setString:[[NSString alloc] initWithString:hexString]];
         
-    }
-    
-    
-    if (foundHub == false) {
-        hubName[0] = '\0';
-    }
-    else {
-        //NSLog(@"%@", portsDefined);
-        //portsList = [[NSMutableArray alloc] init];
-        [portsList addObjectsFromArray:portsDefined];
-        //printf("HUB Name: %s\n", hubName);
     }
     
     free(text);
@@ -141,150 +148,141 @@ void findOemIdOrLength (char c, int* counter, char* oemIdOrlength, bool* found, 
     *pos = p;
 }
 
-void findHubDefinition (char c, int* counter, char* hubName, bool* found, int* pos) {
-    const int size = 9;
-    const char referenceString[size] = "External";
+void findUPC (const char* text, const unsigned long textSize, unsigned long* it, int* cBS, int* sS, int* count, bool* found, int* scopeCounter, bool* foundScope, int* deviceCounter, bool* foundDevice, int* methodCounter, bool* foundMethod, int* packageCounter, bool* foundPackage, int* ifCounter, bool* foundIf, int* elseCounter, bool* foundElse, int* elseifCounter, bool* foundElseif, int* whileCounter, bool* foundWhile, int* bufferCounter, bool* foundBuffer, int* fieldCounter, bool* foundField, int* irqCounter, bool* foundIrq, NSMutableArray* scopeArray, NSMutableArray* portsList, NSMutableArray* fullNamesList, bool patch, NSMutableArray* portNameToPatch, NSMutableArray* fullPortNameToPatch, NSMutableArray* isEnabled, NSMutableArray* connectorType, NSMutableString* source, bool* patched) {
+    unsigned long i = *it;
+    int commentBlockStatus = *cBS;
+    int stringStatus = *sS;
+    int counter = *count;
     
-    const char hub[5] = "RHUB";
+    searchWord("_UPC", &counter, text[i], found, text[i-1]);
+    searchWord("Scope", scopeCounter, text[i], foundScope, text[i-1]);
+    searchWord("Device", deviceCounter, text[i], foundDevice, text[i-1]);
+    searchWord("Method", methodCounter, text[i], foundMethod, text[i-1]);
+    searchWord("Package", packageCounter, text[i], foundPackage, text[i-1]);
+    searchWord("If", ifCounter, text[i], foundIf, text[i-1]);
+    searchWord("Else", elseCounter, text[i], foundElse, text[i-1]);
+    searchWord("ElseIf", elseifCounter, text[i], foundElseif, text[i-1]);
+    searchWord("While", whileCounter, text[i], foundWhile, text[i-1]);
+    searchWord("Buffer", bufferCounter, text[i], foundBuffer, text[i-1]);
+    searchWord("Field", fieldCounter, text[i], foundField, text[i-1]);
+    searchWord("IRQ", irqCounter, text[i], foundIrq, text[i-1]);
     
-    int count = *counter;
-    bool f = *found;
-    int p = *pos;
-    
-    if (c == ' ') {
-        return;
-    }
-    if (count == size-1) {
-        if (c == '(') {
-            count++;
-        }
-    }
-    else if (count == size) {
-        if (c == hub[0]) {
-            count++;
-        }
-        else if (c == ',') {
-            count = 0;
-            p = 0;
-        }
-        else {
-            hubName[p] = c;
-            p++;
-        }
-    }
-    else if (count == size+1) {
-        if (c == hub[1]) {
-            count++;
-        }
-        else {
-            count = 0;
-            p = 0;
-        }
-    }
-    else if (count == size+2) {
-        if (c == hub[2]) {
-            count++;
-        }
-        else {
-            count = 0;
-            p = 0;
-        }
-    }
-    else if (count == size+3) {
-        if (c == hub[3]) {
-            count++;
-        }
-        else {
-            count = 0;
-            p = 0;
-        }
-    }
-    else if (count == size+4) {
-        if (c == ',') {
-            hubName[p] = '\0';
-            f = true;
-            
-            const unsigned long hLen = strlen(hub);
-            for (int i = 0; i < hLen; i++) {
-                hubName[p + i] = hub[i];
+    if (*found == true) {
+        counter = 0;
+        *found = false;
+        
+        NSMutableString* portName = [[NSMutableString alloc] init];
+        NSMutableString* fullName = [[NSMutableString alloc] init];
+        int k = 0;
+        for (int j = 0; j < [scopeArray count]; j++) {
+            if ([[[[[scopeArray objectAtIndex:j] objectAtIndex:0] objectAtIndex:0] objectAtIndex:1] isEqualToString:@"Scope"]) {
+                //NSLog(@"%@", [[[[scopeArray objectAtIndex:j] objectAtIndex:0] objectAtIndex:0] objectAtIndex:0]);
+                [portName setString:cutPortName([[[[scopeArray objectAtIndex:j] objectAtIndex:0] objectAtIndex:0] objectAtIndex:0])];
+                if (k > 0) {
+                    [fullName appendString:@"."];
+                }
+                [fullName appendString:[[[[scopeArray objectAtIndex:j] objectAtIndex:0] objectAtIndex:0] objectAtIndex:0]];
+                //NSLog(@"%@", portName);
+                k++;
             }
-            hubName[p + hLen] = '\0';
-            
-            count = 0;
-            p = 0;
+            //NSLog(@"%@", [scopeArray objectAtIndex:j]);
         }
-    }
-    else if (c == referenceString[count]) {
-        //printf("%c", c);
-        count++;
-    }
-    else {
-        count = 0;
-    }
-    
-    *counter = count;
-    *found = f;
-    *pos = p;
-}
-
-bool findPorts (char c, int* counter, char* portName, bool* found, int* pos, char* hubName) {
-    bool result = false;
-    
-    int size = 9;
-    const char ref1[] = "External(";
-    char referenceString[size + strlen(hubName)];
-    
-    for (int i = 0; i < size; i++) {
-        referenceString[i] = ref1[i];
-    }
-    for (int i = 0; i < strlen(hubName); i++) {
-        referenceString[size + i] = hubName[i];
-    }
-    referenceString[size + strlen(hubName)] = '\0';
-    
-    size += strlen(hubName);
-    
-    int count = *counter;
-    bool f = *found;
-    int p = *pos;
-    
-    if (c == ' ') {
-        return result;
-    }
-    if (count == 0 && c != 'E') {
-        f = true;
-        return result;
-    }
-    if (count == size-1) {
-        if (c == '.') {
-            count++;
-        }
-    }
-    else if (count == size) {
-        if (c == ',') {
-            portName[p] = '\0';
-            result = true;
-            count = 0;
-            p = 0;
+        
+        if (patch == false) {
+            [portsList addObject:portName];
+            [fullNamesList addObject:fullName];
         }
         else {
-            portName[p] = c;
-            p++;
+            //printf("F\n");
+            //NSLog(@"%@ %@", portName, portNameToPatch);
+            for (int h = 0; h < [portNameToPatch count]; h++) {
+                if ([portName isEqualToString:[portNameToPatch objectAtIndex:h]]) {
+                    if ([fullName isEqualToString:[fullPortNameToPatch objectAtIndex:h]]) {
+                        int bracketCount = 0;
+                        applyPatch(source, &i, text, &commentBlockStatus, &stringStatus, &bracketCount, textSize, [isEnabled objectAtIndex:h], [[connectorType objectAtIndex:h] integerValue]); // ?????
+                        [portNameToPatch removeObjectAtIndex:h];
+                        [fullPortNameToPatch removeObjectAtIndex:h];
+                        [isEnabled removeObjectAtIndex:h];
+                        [connectorType removeObjectAtIndex:h];
+                        if ([portNameToPatch count] == 0) {
+                            *patched = true;
+                        }
+                    }
+                }
+            }
         }
-    }
-    else if (c == referenceString[count]) {
-        //printf("%c", c);
-        count++;
-    }
-    else {
-        count = 0;
+        //NSLog(@"%@", portName);
+        //NSLog(@"%@", fullName);
+        //NSLog(@"%@", scopeArray);
     }
     
-    *counter = count;
-    *found = f;
-    *pos = p;
+    if (*foundScope == true || *foundDevice == true || *foundMethod == true || *foundPackage == true || *foundIf == true || *foundElse == true || *foundElseif == true || *foundWhile == true || *foundBuffer == true || *foundField == true || *foundIrq == true) {
+        
+        
+        if (*foundScope == true) {
+            NSString* scopeName = [[NSString alloc] initWithString:grabScopeName(text, textSize, it)];
+            //[scopeArray addObject:[[NSArray alloc] initWithObjects:[NSArray arrayWithObjects:@[grabScopeName(text, textSize, it), @"Scope"], nil], nil]];
+            [scopeArray addObject:[[NSArray alloc] initWithObjects:[NSArray arrayWithObjects:@[scopeName, @"Scope"], nil], nil]];
+            //NSLog(@"Found scope: %@", scopeName);
+            //NSLog(@"%@", scopeArray);
+        }
+        else if (*foundDevice == true) {
+            [scopeArray addObject:[[NSArray alloc] initWithObjects:[NSArray arrayWithObjects:@[grabScopeName(text, textSize, it), @"Scope"], nil], nil]];
+        }
+        else {
+            [scopeArray addObject:[[NSArray alloc] initWithObjects:[NSArray arrayWithObjects:@[grabScopeName(text, textSize, it), @"Else"], nil], nil]];
+        }
+        
+        *foundScope = false;
+        *foundDevice = false;
+        *foundMethod = false;
+        *foundPackage = false;
+        *foundIf = false;
+        *foundElse = false;
+        *foundWhile = false;
+        *foundElseif = false;
+        *foundBuffer = false;
+        *foundField = false;
+        *foundIrq = false;
+        
+        *scopeCounter = 0;
+        *deviceCounter = 0;
+        *methodCounter = 0;
+        *packageCounter = 0;
+        *ifCounter = 0;
+        *elseCounter = 0;
+        *elseifCounter = 0;
+        *whileCounter = 0;
+        *bufferCounter = 0;
+        *fieldCounter = 0;
+        *irqCounter = 0;
+        
+        //printf("%lu\n", i);
+        
+    }
     
-    return result;
+    *it = i;
+    *cBS = commentBlockStatus;
+    *sS = stringStatus;
+    *count = counter;
 }
 
-
+NSString* grabScopeName (const char* text, unsigned long textSize, unsigned long* it) {
+    unsigned long i = *it;
+    NSMutableString* str = [[NSMutableString alloc] init];
+    for (; i < textSize && text[i] != ')'; i++) {
+        if (!is_separator(text[i])) {
+            //printf("%c", text[i]);
+            char ch[2];
+            ch[0] = text[i];
+            ch[1] = '\0';
+            [str appendString:[[NSString alloc] initWithCString:ch encoding:NSUTF8StringEncoding]];
+        }
+    }
+    //printf("\n");
+    
+    //NSLog(@"%@", str);
+    
+    *it = i;
+    return str;
+}

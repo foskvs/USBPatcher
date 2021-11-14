@@ -23,8 +23,9 @@ struct USBPatcherDocument: FileDocument {
     var tableLengthHex: String
     var tableOemId: String
     var tableOemIdHex: String
-    var portsList: [String]
+    var portsList: [PortName]
     var tempPortsList: [String]
+    var fullNamesList: [String]
     var urlString: String
 
     var portsInfo: PortsInformation
@@ -68,6 +69,7 @@ struct USBPatcherDocument: FileDocument {
         tableOemIdHex = ""
         portsList = []
         tempPortsList = []
+        fullNamesList = []
         urlString = ""
         
         isBinary = false
@@ -78,16 +80,19 @@ struct USBPatcherDocument: FileDocument {
         disassembledName = NSMutableString(string: FileName)
         pwd = ""
         
-        parseText(text: text, length: &tableLength, lengthHex: &tableLengthHex, oemId: &tableOemId, oemIdHex: &tableOemIdHex, portsList: &tempPortsList)
+        parseText(text: text, length: &tableLength, lengthHex: &tableLengthHex, oemId: &tableOemId, oemIdHex: &tableOemIdHex, portsList: &tempPortsList, fullNamesList: &fullNamesList)
         
+        for i in 0..<tempPortsList.count {
+            portsList.append(PortName(name: tempPortsList[i], fullName: fullNamesList[i]))
+        }/*
         for port in tempPortsList {
             let textNS = NSMutableString(string: text)
             var result: Bool = false
             patchPort(textNS, port, false, 0xFF, false, &result)
             if (result == true) {
-                portsList.append(port)
+                portsList.append(PortName(name: "", fullName: ""))
             }
-        }
+        }*/
         
         self.portsInfo = PortsInformation(document: self)
         //self.portsInfo = PortsInformation()
@@ -202,18 +207,27 @@ struct USBPatcherDocument: FileDocument {
         tableOemIdHex = ""
         portsList = []
         tempPortsList = []
+        fullNamesList = []
         urlString = ""
         
-        parseText(text: text, length: &tableLength, lengthHex: &tableLengthHex, oemId: &tableOemId, oemIdHex: &tableOemIdHex, portsList: &tempPortsList)
+        parseText(text: text, length: &tableLength, lengthHex: &tableLengthHex, oemId: &tableOemId, oemIdHex: &tableOemIdHex, portsList: &tempPortsList, fullNamesList: &fullNamesList)
         
+        
+        for i in 0..<tempPortsList.count {
+            portsList.append(PortName(name: tempPortsList[i], fullName: fullNamesList[i]))
+        }
+        /*
         for port in tempPortsList {
+            portsList.append(port)
+            
+            
             let textNS = NSMutableString(string: text)
             var result: Bool = false
             patchPort(textNS, port, false, 0xFF, false, &result)
             if (result == true) {
                 portsList.append(port)
             }
-        }
+        }*/
         
         self.portsInfo = PortsInformation(document: self)
     }
@@ -242,12 +256,32 @@ struct USBPatcherDocument: FileDocument {
     }
 }
 
+struct PortName {
+    var name: String
+    var fullName: String
+    
+    init(name: String, fullName: String) {
+        self.name = name
+        self.fullName = fullName
+    }
+}
+
 struct PortsInformation {
     struct Port: Identifiable {
         var portName: String
         var connectorType: Int
         var isEnabled: Bool
+        var fullName: String
         var id = UUID()
+        var dictionary: [String: Any] {
+            return ["portName": self.portName,
+                    "connectorType": self.connectorType,
+                    "isEnabled": self.isEnabled,
+                    "fullName": self.fullName]
+        }
+        var nsDictionary: NSDictionary {
+            return dictionary as NSDictionary
+        }
     }
     
     init() {
@@ -260,24 +294,27 @@ struct PortsInformation {
         self.ports = []
         //print(document.portsList)
         for el in document.portsList {
-            self.ports.append(Port(portName: el, connectorType: 255, isEnabled: false))
+            self.ports.append(Port(portName: el.name, connectorType: 255, isEnabled: false, fullName: el.fullName))
         }
         //print(ports)
     }
     
+    
     var ports: [Port]
 }
 
-func parseText(text: String, length: inout String, lengthHex: inout String, oemId: inout String, oemIdHex: inout String, portsList: inout [String]) {
+func parseText(text: String, length: inout String, lengthHex: inout String, oemId: inout String, oemIdHex: inout String, portsList: inout [String], fullNamesList: inout [String]) {
     
     
+    let textNS = NSMutableString(string: text)
     let lengthNS = NSMutableString(string: length)
     let lengthHexNS = NSMutableString(string: lengthHex)
     let oemIdNS = NSMutableString(string: oemId)
     let oemIdHexNS = NSMutableString(string: oemIdHex)
     let portsListNS = NSMutableArray(array: portsList)
+    let fullNamesListNS = NSMutableArray(array: fullNamesList)
     
-    cParseText(text, lengthNS, lengthHexNS, oemIdNS, oemIdHexNS, portsListNS)
+    cParseText(textNS, lengthNS, lengthHexNS, oemIdNS, oemIdHexNS, portsListNS, fullNamesListNS, false, [], [], [], [])
     
     //print("L", lengthNS, " a", lengthHexNS)
     length = lengthNS as String
@@ -285,18 +322,60 @@ func parseText(text: String, length: inout String, lengthHex: inout String, oemI
     oemId = oemIdNS as String
     oemIdHex = oemIdHexNS as String
     portsList = portsListNS as! [String]
+    fullNamesList = fullNamesListNS as! [String]
     
 }
 
 func patch(doc: Binding<USBPatcherDocument>) {
     if (doc.portsInfo.ports.count > 0) {
+        
+        let textNS = NSMutableString(string: doc.text.wrappedValue)
+        //var found: Bool = false
+        
+        let lengthNS = NSMutableString(string: doc.tableLength.wrappedValue)
+        let lengthHexNS = NSMutableString(string: doc.tableLengthHex.wrappedValue)
+        let oemIdNS = NSMutableString(string: doc.tableOemId.wrappedValue)
+        let oemIdHexNS = NSMutableString(string: doc.tableOemIdHex.wrappedValue)
+        let portsListNS = NSMutableArray(array: doc.portsList.wrappedValue)
+        let fullNamesListNS = NSMutableArray(array: doc.fullNamesList.wrappedValue)
+        
+        var namesArray: [String] = []
+        var fullNamesArray: [String] = []
+        var isEnabledArray: [Bool] = []
+        var connectorTypeArray: [Int] = []
+        for i in 0..<doc.portsInfo.ports.count {
+            namesArray.append(doc.portsInfo.ports[i].portName.wrappedValue)
+            fullNamesArray.append(doc.portsInfo.ports[i].fullName.wrappedValue)
+            isEnabledArray.append(doc.portsInfo.ports[i].isEnabled.wrappedValue)
+            connectorTypeArray.append(doc.portsInfo.ports[i].connectorType.wrappedValue)
+        }
+        
+        let namesArrayNS = NSMutableArray(array: namesArray)
+        let fullNamesArrayNS = NSMutableArray(array: fullNamesArray)
+        let isEnabledArrayNS = NSMutableArray(array: isEnabledArray)
+        let connectorTypeArrayNS = NSMutableArray(array: connectorTypeArray)
+        
+        cParseText(textNS, lengthNS, lengthHexNS, oemIdNS, oemIdHexNS, portsListNS, fullNamesListNS, true, namesArrayNS, fullNamesArrayNS, isEnabledArrayNS, connectorTypeArrayNS)
+        //patchPort(textNS, port.portName.wrappedValue, port.isEnabled.wrappedValue, port.connectorType.wrappedValue, true, &found)
+        doc.text.wrappedValue = textNS as String
+        
+        /*
         for port in doc.portsInfo.ports {
             //print(port.portName.wrappedValue)
+            
             let textNS = NSMutableString(string: doc.text.wrappedValue)
-            var found: Bool = false
-            patchPort(textNS, port.portName.wrappedValue, port.isEnabled.wrappedValue, port.connectorType.wrappedValue, true, &found)
+            //var found: Bool = false
+            
+            let lengthNS = NSMutableString(string: doc.tableLength.wrappedValue)
+            let lengthHexNS = NSMutableString(string: doc.tableLengthHex.wrappedValue)
+            let oemIdNS = NSMutableString(string: doc.tableOemId.wrappedValue)
+            let oemIdHexNS = NSMutableString(string: doc.tableOemIdHex.wrappedValue)
+            let portsListNS = NSMutableArray(array: doc.portsList.wrappedValue)
+            let fullNamesListNS = NSMutableArray(array: doc.fullNamesList.wrappedValue)
+            cParseText(textNS, lengthNS, lengthHexNS, oemIdNS, oemIdHexNS, portsListNS, fullNamesListNS, true, port.portName.wrappedValue, port.fullName.wrappedValue, port.isEnabled.wrappedValue, port.connectorType.wrappedValue)
+            //patchPort(textNS, port.portName.wrappedValue, port.isEnabled.wrappedValue, port.connectorType.wrappedValue, true, &found)
             doc.text.wrappedValue = textNS as String
-        }
+        }*/
     }
     //let textNS = NSMutableString(string: doc.text.wrappedValue)
     //patchPort(textNS, doc.portsInfo.ports[0].portName.wrappedValue, doc.portsInfo.ports[0].isEnabled.wrappedValue, doc.portsInfo.ports[0].connectorType.wrappedValue)

@@ -26,8 +26,6 @@ You can open ACPI Machine Language binaries directly, so there is no need to rec
 
 ## Supported configurations
 
-Currently only SSDTs with with ports declared on an external table (e.g. DSDT) are supported.
-
 Both `Name (_UPC, ...` and `Method (_UPC, ...` are supported.
 
 ## Warning
@@ -37,12 +35,12 @@ I am not responsible for corrupt files.
 The macOS target version should be at least macOS 12.0.
 
 The iOS target version should be at least iOS 15.
-Currently the app doesn't work on iOS.
+Currently the app is not supported on iOS.
 
 ## To-do list
 
  1. [X] Support tables with \_UPC defined as `Name`.
- 2. [ ] Support ports that are defined in the same table of \_UPC (e.g. DSDTs).
+ 2. [X] Support ports that are defined in the same table of \_UPC (e.g. DSDTs).
  3. [X] List only ports that have \_UPC defined in the SSDT.
  4. [X] Open ACPI Machine Language binaries.
  5. [ ] Add the possibility to import the current configuration from the ACPI tables.

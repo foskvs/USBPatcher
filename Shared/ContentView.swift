@@ -23,7 +23,8 @@ struct ContentView: View {
     let rightLengthWidth: CGFloat = 50
     
     #if os(macOS)
-    let portNameWidth: CGFloat = 40
+    let portNameWidth: CGFloat = 50
+    let fullNameWidth: CGFloat = 250
     #else
     let portNameWidth: CGFloat = 50
     #endif
@@ -67,6 +68,10 @@ struct ContentView: View {
             List($document.portsInfo.ports) { $el in
                 HStack {
                     Spacer()
+                    #if os(macOS)
+                    Text(el.fullName)
+                        .frame(maxWidth: fullNameWidth, alignment: .leading)
+                    #endif
                     Text(el.portName)
                         .frame(maxWidth: portNameWidth, alignment: .leading)
                     Picker("Connector Type", selection: $el.connectorType) {
